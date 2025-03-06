@@ -184,16 +184,37 @@ var sorgenCenters = { // Center locations of the bubbles.
   // Sechster Button: Vertrauen
  
 var vertrauenCenters = { // Center locations of the bubbles.
-    1: { x: 375, y: height / 2 },
-    2: { x: 500, y: height / 2 },
-    3: { x: 700, y: height / 2 }
+    1: { x: 350, y: height / 2 },
+    2: { x: 475, y: height / 2 },
+    3: { x: 625, y: height / 2 }
   };
 
   var vertrauenTitleX = { // X locations of the year titles.
     
-    'Vertraue und Benutze':200 ,
-    'Vertraue und Benutze nicht': 500,
-    'Vertraue nicht und Benutze nicht': 800
+    'vertraue':175 ,
+    'weiss nicht': 775,
+    'vertraue nicht': 475
+  };
+  
+  
+  
+  // Siebter Button: Vernutzt
+ 
+var vernutztCenters = { // Center locations of the bubbles.
+    1: { x: 250, y: height / 2 },
+    2: { x: 400, y: height / 2 },
+    3: { x: 520, y: height / 2 },
+    4: { x: 680, y: height / 2 },
+    5: { x: 810, y: height / 2 }
+  };
+
+  var vernutztTitleX = { // X locations of the year titles.
+    
+    'vertraue benutze':100 ,
+    'vertraue benutze nicht': 250,
+    'vertraue nicht benutze': 475,
+    'vertraue nicht benutze nicht': 750,
+    'weiss nicht': 975
   };
        
     
@@ -265,6 +286,8 @@ var vertrauenCenters = { // Center locations of the bubbles.
        sorgen: d.sorgenbarometer,
         
         vertrauen: d.tiktokvertrauen,
+        
+        vernutzt: d.tiktokvertrnutzt,
         
         x: Math.random() * 900,
         y: Math.random() * 800
@@ -363,6 +386,7 @@ var vertrauenCenters = { // Center locations of the bubbles.
     hideScreentime();
     hideSorgen();
     hideVertrauen();
+    hideVernutzt();
     
 
     
@@ -408,6 +432,7 @@ Die Positionierung basiert auf dem alpha Parameter des force layouts und wird kl
     hideScreentime();
    hideSorgen();
    hideVertrauen();
+   hideVernutzt();
 
 
     force.on('tick', function (e) {
@@ -458,6 +483,7 @@ function moveToYear(alpha) {
     hideScreentime();
    hideSorgen();
    hideVertrauen();
+   hideVernutzt();
 
 
     force.on('tick', function (e) {
@@ -508,6 +534,7 @@ function moveToAgecat(alpha) {
     hideScreentime();
     hideSorgen();
     hideVertrauen();
+    hideVernutzt();
 
 
     force.on('tick', function (e) {
@@ -558,6 +585,7 @@ function moveToAgecat(alpha) {
     hideAgecat();
     hideSorgen();
     hideVertrauen();
+    hideVernutzt();
 
 
     force.on('tick', function (e) {
@@ -608,6 +636,7 @@ function moveToAgecat(alpha) {
     hideAgecat();
     hideScreentime();
     hideVertrauen();
+    hideVernutzt();
 
 
     force.on('tick', function (e) {
@@ -658,6 +687,7 @@ function moveToAgecat(alpha) {
     hideAgecat();
     hideScreentime();
     hideSorgen();
+    hideVernutzt();
     
 
 
@@ -685,12 +715,67 @@ function moveToAgecat(alpha) {
   function showVertrauen() {
 
     var vertrauenData = d3.keys(vertrauenTitleX);
-    var vertrauen = svg.selectAll('.Vertrauen')
+    var vertrauen = svg.selectAll('.vertrauen')
       .data(vertrauenData);
 
     vertrauen.enter().append('text')
       .attr('class', 'vertrauen')
       .attr('x', function (d) { return vertrauenTitleX[d]; })
+      .attr('y', 65)
+      .attr('text-anchor', 'middle')
+      .text(function (d) { return d; });
+    }    
+  
+  
+  
+  
+  //* ------------------------------------------------------------------
+//
+// vernutzt
+//
+// -----------------------------------------------------------------*/
+    
+  function splitBubblesintoVernutzt() {
+    showVernutzt();
+    hideYear();
+    hideSex();
+    hideAgecat();
+    hideScreentime();
+    hideSorgen();
+    hideVertrauen();
+    
+
+
+    force.on('tick', function (e) {
+      bubbles.each(moveToVernutzt(e.alpha))
+        .attr('cx', function (d) { return d.x; })
+        .attr('cy', function (d) { return d.y; });
+    });
+
+    force.start();
+  }
+
+  function moveToVernutzt(alpha) {
+    return function (d) {
+      var target = vernutztCenters[d.vernutzt];
+      d.x = d.x + (target.x - d.x) * damper * alpha * 1.1;
+      d.y = d.y + (target.y - d.y) * damper * alpha * 1.1;
+    };
+  }
+
+  function hideVernutzt() {
+    svg.selectAll('.vernutzt').remove();
+  }
+
+  function showVernutzt() {
+
+    var vernutztData = d3.keys(vernutztTitleX);
+    var vernutzt = svg.selectAll('.vernutzt')
+      .data(vernutztData);
+
+    vernutzt.enter().append('text')
+      .attr('class', 'vernutzt')
+      .attr('x', function (d) { return vernutztTitleX[d]; })
       .attr('y', 65)
       .attr('text-anchor', 'middle')
       .text(function (d) { return d; });
@@ -722,10 +807,12 @@ function moveToAgecat(alpha) {
       splitBubblesintoSex();
     } else if (displayName === 'screentime') {
       splitBubblesintoScreentime();
-          } else if (displayName === 'sorgen') {
+    } else if (displayName === 'sorgen') {
       splitBubblesintoSorgen();
-               } else if (displayName === 'vertrauen') {
+    } else if (displayName === 'vertrauen') {
       splitBubblesintoVertrauen();
+    } else if (displayName === 'vernutzt') {
+      splitBubblesintoVernutzt();
     } else {
       groupBubbles();
     }
@@ -756,7 +843,7 @@ function moveToAgecat(alpha) {
 
   var fillColor = d3.scale.ordinal()
     .domain(['1','2','3', '4','5','6'])
-    .range(['#F7CAD0', '#ff006e', '#48CAE4', '#0096C7','#023E8A','#03045E']);
+    .range(['#E7E393', '#F4C95D', '#DD7230', '#854D27','#2E1F27','black']);
 
   /* Tooltip-Funktion*/
   function showDetail(d) {
@@ -778,6 +865,10 @@ function moveToAgecat(alpha) {
                   '</span><br/>' +
          '<span class="name">Ich vertraue TikTok: </span><span class="value">' +
                   d.vertrauen +
+                  '</span><br/>' +
+        
+                  '<span class="name">ich vernutze Tiktok: </span><span class="value">' +
+                  d.vernutzt +
                   '</span><br/>' +
         
                   '<span class="name">"Umfragejahr": </span><span class="value">' +
